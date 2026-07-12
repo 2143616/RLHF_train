@@ -1,0 +1,25 @@
+# 大数据文件（从 HuggingFace 下载，prepare_data.py 自动生成）
+data/sft_data.json
+data/rm_data.json
+
+# 模型权重文件（太大，不适合 GitHub）
+models/
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
