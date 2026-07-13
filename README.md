@@ -15,11 +15,13 @@ RLHF_train/
 │   ├── prepare_data.py        # 从 Anthropic/hh-rlhf 提取数据
 │   ├── stage1_sft.py          # Stage 1: 监督微调
 │   ├── stage2_rm.py           # Stage 2: 奖励模型
-│   └── stage3_grpo.py         # Stage 3: GRPO 强化学习
+│   ├── stage3_grpo.py         # Stage 3: GRPO 强化学习
+│   └── train_dpo.py           # DPO 偏好对齐（QLoRA）
 ├── output/
 │   ├── sft/                   # SFT 产出 (12GB 全参数)
 │   ├── rm/                    # RM 产出 (12GB)
 │   └── grpo/                  # GRPO 产出 (12GB)
+│   └── dpo-final/             # DPO 产出 (LoRA adapter)
 ├── run_rlhf_full.sh           # 一键三阶段流水线
 └── README.md
 ```
@@ -52,6 +54,11 @@ RLHF_train/
 - **使用 Stage 2 训练的 RM 模型评分**（替代 rule-based rewards）
 - num_generations=4, beta=0.04
 - **验证结果** (3步): KL 0.001, Reward ~0.28
+
+### DPO（直接偏好优化）
+- QLoRA (4-bit) + LoRA (r=16)，仅训练 ~30MB adapter
+- 使用 DPOTrainer，跳过显式 RM，直接从偏好对优化
+- beta=0.1, 学习率 5e-5, 3 epochs
 
 ## 环境要求
 

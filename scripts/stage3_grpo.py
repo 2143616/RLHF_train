@@ -107,10 +107,6 @@ def reward_rm_score(completions, prompts, **kwargs):
     return rewards
 
 
-# 可选：同时使用 rule-based 奖励作为辅助信号
-# from stage3_grpo import reward_length, reward_format, reward_safety
-# reward_funcs = [reward_rm_score, reward_length, reward_format, reward_safety]
-
 reward_funcs = [reward_rm_score]
 print(f"  奖励函数: reward_rm_score（RM 模型）")
 

@@ -2,18 +2,11 @@
 准备完整的 RLHF 三阶段数据集（SFT + RM + PPO）
 数据源：Anthropic/hh-rlhf（从 hf-mirror 加载）
 """
-import os, json, re, random
-from pathlib import Path
+import os, json, re
 
 DATA_DIR = "/home/hyl/project/RLHF_train/data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# ===== 1. 从 hh-rlhf 加载原始数据 =====
-print("=" * 55)
-print("Step 1: 加载 Anthropic/hh-rlhf 数据集")
-print("=" * 55)
-
-# 使用 hf-mirror 镜像
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 from datasets import load_dataset
 
@@ -47,7 +40,6 @@ for i, row in enumerate(ds):
     if prompt and response and 10 < len(prompt) < 1000 and 10 < len(response) < 2000:
         sft_data.append({
             "instruction": prompt,
-            "input": "",
             "output": response
         })
 

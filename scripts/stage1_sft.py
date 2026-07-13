@@ -62,7 +62,7 @@ def tokenize_fn(examples):
     return enc
 
 dataset = dataset.map(tokenize_fn, batched=True, batch_size=1000,
-                       remove_columns=["instruction", "input", "output"])
+                       remove_columns=["instruction", "output"])
 dataset = dataset.train_test_split(test_size=VALIDATION_SPLIT, seed=42)
 print(f"  训练: {len(dataset['train'])} 条, 验证: {len(dataset['test'])} 条")
 

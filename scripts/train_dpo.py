@@ -3,29 +3,23 @@ RLHF / DPO 训练脚本
 使用 TRL 的 DPOTrainer 对 Qwen2.5-1.5B-Instruct 进行偏好对齐训练
 """
 import os
-import sys
 import json
 import torch
-import gc
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    TrainingArguments,
-    HfArgumentParser,
 )
 from trl import DPOTrainer, DPOConfig
 from datasets import Dataset
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig, prepare_model_for_kbit_training
 
 # ===== 配置 =====
 MODEL_PATH = "/home/hyl/project/RLHF_train/models/qwen2.5-1.5b"
 DATA_PATH = "/home/hyl/project/RLHF_train/data/preference_data.json"
 OUTPUT_DIR = "/home/hyl/project/RLHF_train/output/dpo-final"
-CACHE_DIR = "/home/hyl/project/RLHF_train/output/cache"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(CACHE_DIR, exist_ok=True)
 
 # ===== 1. 加载 tokenizer =====
 print("=" * 60)
@@ -73,13 +67,8 @@ ref_model = AutoModelForCausalLM.from_pretrained(
 )
 
 model = prepare_model_for_kbit_training(model)
-ref_model = prepare_model_for_kbit_training(ref_model)
 
 print("Models loaded successfully!")
-
-# 打印显存使用情况
-mem = torch.cuda.memory_allocated() / 1024**3
-print(f"GPU memory used after model loading: {mem:.2f} GB")
 
 # ===== 3. 配置 LoRA =====
 print("\n" + "=" * 60)
@@ -177,9 +166,6 @@ training_args = DPOConfig(
     logging_steps=5,
     save_steps=50,
     eval_steps=50,
-    eval_strategy="steps",
-    logging_strategy="steps",
-    save_strategy="steps",
     save_total_limit=2,
     bf16=True,
     gradient_checkpointing=True,
@@ -203,26 +189,6 @@ print("\n" + "=" * 60)
 print("Step 6: Creating DPOTrainer...")
 print("=" * 60)
 
-# 定义一个数据处理函数
-def tokenize_dpo_data(examples):
-    """对 DPO 数据进行 tokenize"""
-    result = {}
-    
-    # Tokenize prompt
-    max_length = training_args.max_length
-    max_prompt_length = training_args.max_prompt_length
-    
-    # 使用 tokenizer 分别处理
-    prompts = examples["prompt"]
-    chosen = examples["chosen"]
-    rejected = examples["rejected"]
-    
-    return {
-        "prompt": prompts,
-        "chosen": chosen,
-        "rejected": rejected,
-    }
-
 trainer = DPOTrainer(
     model=model,
     ref_model=ref_model,
@@ -236,7 +202,7 @@ trainer = DPOTrainer(
 print("DPOTrainer created successfully!")
 print(f"Training samples: {len(train_dataset)}")
 print(f"Eval samples: {len(eval_dataset)}")
-print(f"DPO beta (KL penalty): 0.1")
+print(f"DPO beta (KL penalty): {training_args.beta}")
 
 # ===== 7. 开始训练 =====
 print("\n" + "=" * 60)
