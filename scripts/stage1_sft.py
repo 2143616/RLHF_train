@@ -43,7 +43,7 @@ tokenizer.pad_token = tokenizer.eos_token
 # 2. 模型
 print("[2/4] 加载模型（全参数 bf16）...")
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL_PATH, torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True,
+    MODEL_PATH, dtype=torch.bfloat16, device_map="auto", trust_remote_code=True,
 )
 print(f"  参数量: {model.num_parameters():,} (全部可训练)")
 

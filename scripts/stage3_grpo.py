@@ -30,7 +30,7 @@ tokenizer.pad_token = tokenizer.eos_token
 print("\n[2/6] 加载 SFT 策略模型（全参数 bf16）...")
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_PATH,
-    torch_dtype=torch.bfloat16,
+    dtype=torch.bfloat16,
     device_map="auto",
     trust_remote_code=True,
 )
@@ -40,7 +40,7 @@ print(f"  策略模型参数量: {model.num_parameters():,}")
 print("\n[3/6] 加载 RM 奖励模型...")
 rm_model = AutoModelForCausalLM.from_pretrained(
     RM_MODEL_PATH,
-    torch_dtype=torch.bfloat16,
+    dtype=torch.bfloat16,
     device_map="auto",
     trust_remote_code=True,
     num_labels=1,

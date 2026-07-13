@@ -38,7 +38,7 @@ tokenizer.pad_token = tokenizer.eos_token
 # 2. 模型
 print("[2/4] 加载模型...")
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL_PATH, torch_dtype=torch.bfloat16, device_map="auto",
+    MODEL_PATH, dtype=torch.bfloat16, device_map="auto",
     trust_remote_code=True, num_labels=1,
 )
 print(f"  参数量: {model.num_parameters():,}")
