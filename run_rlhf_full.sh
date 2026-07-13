@@ -9,8 +9,8 @@ export PYTHONPATH="/home/hyl/miniconda3/envs/rlhf/lib/python3.10/site-packages:$
 # 验证步数（通过环境变量控制）
 # 设 SFT_STEPS/RM_STEPS/GRPO_STEPS 为步数模式（用于快速验证）
 # 不设则为 epoch 模式（完整训练）
-export SFT_STEPS=${SFT_STEPS:-}     # 留空 = epoch模式
-export RM_STEPS=${RM_STEPS:-}       # 留空 = epoch模式
+[ -n "${SFT_STEPS:-}" ] && export SFT_STEPS
+[ -n "${RM_STEPS:-}" ]   && export RM_STEPS
 export GRPO_STEPS=${GRPO_STEPS:-3}  # GRPO 默认 3 步
 
 echo "========================================"

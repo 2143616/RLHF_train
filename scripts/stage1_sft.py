@@ -5,17 +5,19 @@ Stage 1: SFT (Supervised Fine-Tuning) — 全参数微调
 import os, json, torch
 from transformers import (
     AutoModelForCausalLM, AutoTokenizer,
-    TrainingArguments, DataCollatorForSeq2Seq,
+    TrainingArguments,
 )
 from transformers import Trainer as HFTrainer
 from datasets import load_dataset
+from dataclasses import dataclass
+from typing import Any, Dict, List
 
 MODEL_PATH = "/home/hyl/project/RLHF_train/models/qwen2.5-1.5b"
 DATA_PATH = "/home/hyl/project/RLHF_train/data/sft_data.json"
 OUTPUT_DIR = "/home/hyl/project/RLHF_train/output/sft"
 
-MAX_STEPS = int(os.environ.get("SFT_STEPS", "0"))
-NUM_EPOCHS = float(os.environ.get("SFT_EPOCHS", "1"))
+MAX_STEPS = int(os.environ.get("SFT_STEPS") or "0")
+NUM_EPOCHS = float(os.environ.get("SFT_EPOCHS") or "1")
 
 # 步数模式 vs epoch 模式
 if MAX_STEPS > 0:
@@ -90,12 +92,30 @@ args = TrainingArguments(
     ddp_find_unused_parameters=False,
 )
 
+@dataclass
+class DataCollatorForSFT:
+    """Causal LM SFT 专用: pad input_ids + attention_mask + labels"""
+    tokenizer: Any
+    def __call__(self, features: List[Dict]) -> Dict[str, torch.Tensor]:
+        input_ids = [f["input_ids"] for f in features]
+        labels = [f["labels"] for f in features]
+        batch = self.tokenizer.pad(
+            {"input_ids": input_ids}, padding=True, return_tensors="pt"
+        )
+        # pad labels 对齐
+        pad_id = self.tokenizer.pad_token_id
+        max_len = batch["input_ids"].size(1)
+        padded_labels = [l + [pad_id] * (max_len - len(l)) for l in labels]
+        batch["labels"] = torch.tensor(padded_labels, dtype=torch.long)
+        return batch
+
+
 trainer = HFTrainer(
     model=model,
     args=args,
     train_dataset=dataset["train"],
     eval_dataset=dataset["test"],
-    data_collator=DataCollatorForSeq2Seq(tokenizer, model=model, padding=True),
+    data_collator=DataCollatorForSFT(tokenizer),
 )
 
 print(f"\n开始训练...")

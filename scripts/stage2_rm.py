@@ -11,8 +11,8 @@ MODEL_PATH = "/home/hyl/project/RLHF_train/models/qwen2.5-1.5b"
 DATA_PATH = "/home/hyl/project/RLHF_train/data/rm_data.json"
 OUTPUT_DIR = "/home/hyl/project/RLHF_train/output/rm"
 
-MAX_STEPS = int(os.environ.get("RM_STEPS", "0"))
-NUM_EPOCHS = float(os.environ.get("RM_EPOCHS", "1"))
+MAX_STEPS = int(os.environ.get("RM_STEPS") or "0")
+NUM_EPOCHS = float(os.environ.get("RM_EPOCHS") or "1")
 
 if MAX_STEPS > 0:
     HF_MAX_STEPS = MAX_STEPS
