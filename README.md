@@ -1,6 +1,6 @@
 # RLHF 三阶段全参数训练项目
 
-完整的 **SFT → RM → GRPO** 三阶段 RLHF 训练流程，使用 **Qwen2.5-1.5B** 全参数微调。
+完整的 **SFT → RM → GRPO** 三阶段 RLHF 训练流程，使用 **Qwen2.5-1.5B** 全参数微调。GRPO 阶段使用 Stage 2 训练的 RM 模型进行奖励评分。
 
 ## 项目结构
 
@@ -49,7 +49,7 @@ RLHF_train/
 
 ### Stage 3: GRPO（强化学习）
 - 使用 GRPOTrainer（替代传统 PPO）
-- 3 个 rule-based reward functions
+- **使用 Stage 2 训练的 RM 模型评分**（替代 rule-based rewards）
 - num_generations=4, beta=0.04
 - **验证结果** (3步): KL 0.001, Reward ~0.28
 
