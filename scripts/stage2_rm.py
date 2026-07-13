@@ -94,7 +94,10 @@ trainer = RewardTrainer(
 )
 
 print(f"\n开始训练...")
-trainer.train()
+try:
+    trainer.train()
+except KeyboardInterrupt:
+    print("\n⚠️  收到中断信号，保存当前模型...")
 trainer.save_model(OUTPUT_DIR)
 tokenizer.save_pretrained(OUTPUT_DIR)
 print(f"✅ RM 完成 → {OUTPUT_DIR}")

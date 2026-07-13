@@ -147,7 +147,10 @@ print(f"  beta (KL): {training_args.beta}")
 print("\n" + "=" * 55)
 print(f"开始 GRPO 训练 ({MAX_STEPS} 步)...")
 print("=" * 55)
-trainer.train()
+try:
+    trainer.train()
+except KeyboardInterrupt:
+    print("\n⚠️  收到中断信号，保存当前模型...")
 
 # 8. 保存
 print("\n保存 GRPO 模型...")
